@@ -7,15 +7,17 @@ import (
 
 // FileDestination struct for handling file-based exports
 type FileDestination struct {
-	filePath string
-	file     *os.File
+	filePath              string
+	appendNewLineEachData bool
+	file                  *os.File
 }
 
 // NewFileDestination initializes and returns a new FileDestination
 // The file is not opened immediately.
-func NewFileDestination(filePath string) *FileDestination {
+func NewFileDestination(filePath string, appendNewLineEachData bool) *FileDestination {
 	return &FileDestination{
-		filePath: filePath,
+		filePath:              filePath,
+		appendNewLineEachData: appendNewLineEachData,
 	}
 }
 
@@ -47,11 +49,15 @@ func (f *FileDestination) WriteData(data string) error {
 		f.file.Close() // Close broken file handle
 		f.file = nil   // Reset file handle for next attempt
 	}
-	_, err = f.file.WriteString("\n")
-	if err != nil {
-		fmt.Println("Failed to write to file:", err)
-		f.file.Close() // Close broken file handle
-		f.file = nil   // Reset file handle for next attempt
+
+	// Append a new line after each data if enabled
+	if f.appendNewLineEachData {
+		_, err = f.file.WriteString("\n")
+		if err != nil {
+			fmt.Println("Failed to write to file:", err)
+			f.file.Close() // Close broken file handle
+			f.file = nil   // Reset file handle for next attempt
+		}
 	}
 
 	return nil

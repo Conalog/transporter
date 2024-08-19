@@ -32,7 +32,7 @@ func main(){
     // 1. Start the exporter
     rawDataExportChan := make(chan string, 8192)
     rawDataDestinations := []Destination{
-        NewFileDestination("path/to/file"),
+        NewFileDestination("/path/to/file", true),
         NewSocketDestination("tcp://localhost:8080"),
     }
     rawDataExporter := NewDataExporter(rawDataExportChan, rawDataDestinations)
