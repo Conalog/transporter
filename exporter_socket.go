@@ -7,13 +7,14 @@ import (
 
 // SocketDestination struct for handling socket-based exports
 type SocketDestination struct {
-	address string
-	conn    net.Conn
+	address               string
+	appendNewLineEachData bool
+	conn                  net.Conn
 }
 
 // NewSocketDestination initializes and returns a new SocketDestination
 // The connection is not established immediately.
-func NewSocketDestination(address string) *SocketDestination {
+func NewSocketDestination(address string, appendNewLineEachData bool) *SocketDestination {
 	return &SocketDestination{
 		address: address,
 	}
@@ -46,6 +47,15 @@ func (s *SocketDestination) WriteData(data string) error {
 		fmt.Println("Failed to write to socket:", err)
 		s.conn.Close() // Close broken connection
 		s.conn = nil   // Reset connection for next attempt
+	}
+
+	if s.appendNewLineEachData {
+		_, err = s.conn.Write([]byte("\n"))
+		if err != nil {
+			fmt.Println("Failed to write to file:", err)
+			s.conn.Close() // Close broken socket
+			s.conn = nil   // Reset file handle for next attempt
+		}
 	}
 
 	return nil
