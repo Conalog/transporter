@@ -33,7 +33,7 @@ func main(){
     rawDataExportChan := make(chan string, 8192)
     rawDataDestinations := []Destination{
         NewFileDestination("/path/to/file", true),
-        NewSocketDestination("tcp://localhost:8080"),
+        NewSocketDestination("tcp://localhost:8080", true),
     }
     rawDataExporter := NewDataExporter(rawDataExportChan, rawDataDestinations)
     go rawDataExporter.Start(ctx) // Close function is called in the defer statement
